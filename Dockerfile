@@ -27,8 +27,12 @@ COPY . .
 EXPOSE 5000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+HEALTHCHECK --interval=30s --timeout=10s --start-period=15s --retries=3 \
     CMD curl -f http://localhost:5000/health || exit 1
 
-# Run the application with gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "3", "app:app"]
+# Run the application with gunicorn (optimized for low-resource servers)
+# - 1 worker (节省内存)
+# - 4 threads (用线程处理并发，比多 worker 更省资源)
+# - timeout 60s (防止 worker 启动慢导致超时被 kill)
+# - preload (主进程预加载应用，worker 启动更快)
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "4", "--timeout", "60", "--preload", "app:app"]

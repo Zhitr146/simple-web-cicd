@@ -8,9 +8,18 @@ services:
     ports:
       - "5000:5000"
     restart: unless-stopped
+    # 优化 Gunicorn 启动参数（与 Dockerfile 中 CMD 一致，也可在此覆盖）
+    command: ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "1", "--threads", "4", "--timeout", "60", "--preload", "app:app"]
+    # 资源限制（避免容器占用过多内存导致被 OOM kill）
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 128M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 5s
+      start_period: 15s
