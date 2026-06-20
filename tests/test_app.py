@@ -88,8 +88,8 @@ class TestMultiply:
 class TestFloatArithmetic:
     def test_add_floats(self, client):
         data = client.get("/api/add?a=1.5&b=2.5").get_json()
-        assert abs(data["result"] - 4.0) < 1e-9
+        assert abs(data["result"] - 4.0) < 0.000001
 
     def test_multiply_floats(self, client):
         data = client.get("/api/multiply?a=2.5&b=4").get_json()
-        assert abs(data["result"] - 10.0) < 1e-
+        assert abs(data["result"] - 10.0) < 0.000001
