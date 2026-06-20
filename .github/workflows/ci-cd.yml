@@ -144,18 +144,19 @@ jobs:
           port: ${{ secrets.DEPLOY_PORT }}
           script: |
             echo "=== Starting deployment ==="
-            cd ~/simple-web-cicd || mkdir -p ~/simple-web-cicd && cd ~/simple-web-cicd
-            docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+            mkdir -p ~/simple-web-cicd
+            cd ~/simple-web-cicd
+            docker pull ghcr.io/zhitr146/simple-web-cicd:latest
             docker stop simple-web-cicd 2>/dev/null || true
             docker rm simple-web-cicd 2>/dev/null || true
             docker run -d \
               --name simple-web-cicd \
               --restart unless-stopped \
               -p 5000:5000 \
-              ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+              ghcr.io/zhitr146/simple-web-cicd:latest
             echo "=== Waiting for service to start ==="
             sleep 5
             echo "=== Health check ==="
             curl -f http://localhost:5000/health || (echo "Health check failed!"; exit 1)
             echo "=== Deployment successful ==="
-            docker ps --filter
+            docker ps --filter name=simple-web-cicd
